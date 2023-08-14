@@ -1,0 +1,11 @@
+#include <stdio.h>
+
+int main(void) {
+  printf("Mackenzie - FCI\n");
+  printf("Algoritmos e ");
+  printf("Prog. II: ");
+  printf("Turma 2N\n");
+  printf("Linguagem que será aprendida na matéria: C\n");
+  printf("FCI foi fundada em 1970");
+  return 0;
+}
