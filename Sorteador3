@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    srand(time(NULL));
+
+    int numero_sorteado = rand() % 100 + 1;
+    int palpite;
+    int tentativas = 0;
+    int max_tentativas = 5;
+
+    while (tentativas < max_tentativas) {
+        printf("Tente adivinhar o número sorteado (entre 1 e 100): ");
+        scanf("%d", &palpite);
+        tentativas++;
+
+        if (palpite < 1 || palpite > 100) {
+            printf("Digite um valor válido entre 1 e 100.\n");
+            continue;
+        }
+
+        if (palpite == numero_sorteado) {
+            printf("Parabéns!!! Você acertou em %d tentativas!\n", tentativas);
+            break;
+        } else if (palpite < numero_sorteado) {
+            printf("Você chutou muito baixo!\n");
+        } else {
+            printf("Você chutou muito alto!\n");
+        }
+    }
+
+    if (tentativas == max_tentativas) {
+        printf("Você excedeu o número máximo de tentativas. O número sorteado era %d.\n", numero_sorteado);
+    }
+
+    return 0;
+}
+Neste programa, a variável max_tentativas controla o número máximo de tentativas permitidas. O programa continuará pedindo palpites até que o usuário acerte o número ou exceda o número máximo de tentativas. Se o usuário não acertar após as 5 tentativas, o programa exibirá a mensagem de excedeu tentativas e mostrará qual era o número sorteado. Certifique-se de compilar e executar o programa em um ambiente C.
+
+
+
+
+
