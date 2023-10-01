@@ -1,0 +1,122 @@
+//Henrique Nunes Mamede Rosa. TIA: 32371861
+//Hugo Rafael Weng. TIA: 32333528
+
+#include <stdio.h>
+
+void impPoli(int pol[], int grau) {
+  for (int i = grau; i >= 0; i--) {
+    if (pol[i] != 0) {
+      printf("%s%d", (i != grau && pol[i] > 0) ? "+" : "", pol[i]);
+      if (i > 0) {
+        printf("x");
+        if (i > 1) {
+          printf("^%d", i);
+        }
+      }
+      printf(" ");
+    }
+  }
+  printf("\n");
+}
+
+void somsubPoli(int pol1[], int grau1, int pol2[], int grau2,
+                               int resultado[], int *grauResultado, int operacao) {
+  *grauResultado = (grau1 > grau2) ? grau1 : grau2;
+  for (int i = 0; i <= *grauResultado; i++) {
+    resultado[i] = 0;
+  }
+
+  for (int i = 0; i <= grau1; i++) {
+    resultado[i] += pol1[i];
+  }
+
+  for (int i = 0; i <= grau2; i++) {
+    resultado[i] += operacao * pol2[i];
+  }
+}
+
+void somPoli(int poly1[], int grau1, int pol2[], int grau2,
+                     int resultado[], int *grauResultado) {
+  somsubPoli(poly1, grau1, pol2, grau2, resultado, grauResultado, 1);
+}
+
+void subPoli(int pol1[], int grau1, int pol2[], int grau2,
+                        int resultado[], int *grauResultado) {
+  somsubPoli(pol1, grau1, pol2, grau2, resultado, grauResultado, -1);
+}
+
+void multiPoli(int pol1[], int grau1, int pol2[], int grau2,
+                           int resultado[], int *grauResultado) {
+  *grauResultado = grau1 + grau2;
+  for (int i = 0; i <= *grauResultado; i++) {
+    resultado[i] = 0;
+  }
+
+  for (int i = 0; i <= grau1; i++) {
+    for (int j = 0; j <= grau2; j++) {
+      resultado[i + j] += pol1[i] * pol2[j];
+    }
+  }
+}
+
+int main() {
+  int opcao;
+  int polinomio1[100], grau1;
+  int polinomio2[100], grau2;
+  int resultado[200], grauResultado;
+
+  do {
+    printf("Calculadora de Polinomios\n");
+    printf("1. Digitar Polinomio 1\n");
+    printf("2. Digitar Polinomio 2\n");
+    printf("3. Somar Polinomios\n");
+    printf("4. Subtrair Polinomios\n");
+    printf("5. Multiplicar Polinomios\n");
+    printf("6. Sair\n");
+    printf("Escolha uma opcao: ");
+    scanf("%d", &opcao);
+
+    switch (opcao) {
+      case 1:
+        printf("Digite o grau do Polinomio 1: ");
+        scanf("%d", &grau1);
+        printf("Digite os coeficientes do Polinomio 1 (do maior grau para o menor):\n");
+        for (int i = grau1; i >= 0; i--) {
+          printf("Coeficiente para x^%d: ", i);
+          scanf("%d", &polinomio1[i]);
+        }
+        break;
+      case 2:
+        printf("Digite o grau do Polinomio 2: ");
+        scanf("%d", &grau2);
+        printf("Digite os coeficientes do Polinomio 2 (do maior grau para o menor):\n");
+        for (int i = grau2; i >= 0; i--) {
+          printf("Coeficiente para x^%d: ", i);
+          scanf("%d", &polinomio2[i]);
+        }
+        break;
+      case 3:
+        somPoli(polinomio1, grau1, polinomio2, grau2, resultado, &grauResultado);
+        printf("Resultado da Soma: ");
+        impPoli(resultado, grauResultado);
+        break;
+      case 4:
+        subPoli(polinomio1, grau1, polinomio2, grau2, resultado, &grauResultado);
+        printf("Resultado da Subtracao: ");
+        impPoli(resultado, grauResultado);
+        break;
+      case 5:
+        multiPoli(polinomio1, grau1, polinomio2, grau2, resultado, &grauResultado);
+        printf("Resultado da Multiplicacao: ");
+        impPoli(resultado, grauResultado);
+        break;
+      case 6:
+        printf("Saindo...\n");
+        break;
+      default:
+        printf("Opcao invalida. Tente novamente.\n");
+    }
+  } while (opcao != 6);
+
+  return 0;
+}
