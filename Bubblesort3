@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void bubble_sentinela(int array[], int n, int* contador) {
+    int troca, i, temp;
+    do {
+        troca = 0;
+        for (i = 0; i < n - 1; i++) {
+            (*contador)++;
+            if (array[i] > array[i + 1]) {
+                temp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = temp;
+                troca = 1;
+            }
+        }
+        n--; // Reduz o tamanho do array, pois o maior elemento já está na posição correta
+    } while (troca);
+}
+
+int main() {
+    int n, contador;
+    int array[1000]; // Defina o tamanho máximo do array
+
+    // Loop para variar o valor de n de 100 a 1000 em incrementos de 100
+    for (n = 100; n <= 1000; n += 100) {
+        int menorContador = n * n; // Inicializa o menor contador como o máximo possível
+        int maiorContador = 0; // Inicializa o maior contador como o mínimo possível
+        int somaContador = 0; // Inicializa a soma do contador para calcular a média
+
+        // Execute o bubble_sentinela e calcule os contadores
+        for (int i = 0; i < 10; i++) {
+            contador = 0; // Reinicialize o contador para cada execução
+            for (int j = 0; j < n; j++) {
+                array[j] = rand() % 1000; // Gera números aleatórios entre 0 e 999
+            }
+
+            bubble_sentinela(array, n, &contador);
+
+            // Atualiza o menor e maior contador
+            if (contador < menorContador) {
+                menorContador = contador;
+            }
+            if (contador > maiorContador) {
+                maiorContador = contador;
+            }
+
+            // Soma o contador para calcular a média
+            somaContador += contador;
+        }
+
+        // Calcula a média dos contadores
+        float mediaContador = (float)somaContador / 10;
+
+        // Imprime os resultados para este valor de n
+        printf("Para n = %d, Menor contador = %d, Média do contador = %.2f, Maior contador = %d\n", n, menorContador, mediaContador, maiorContador);
+    }
+
+    return 0;
+}
