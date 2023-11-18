@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_WIDTH 100
+#define MAX_HEIGHT 100
+
+int main(int argc, char *argv[]) {
+    if (argc < 2 || (strcmp(argv[1], "-f") != 0 && strcmp(argv[1], "--file") != 0 && strcmp(argv[1], "-m") != 0 && strcmp(argv[1], "--manual") != 0 && strcmp(argv[1], "-?") != 0 && strcmp(argv[1], "--help") != 0)) {
+        printf("Uso: %s [-? | -m | -f ARQ]\n", argv[0]);
+        printf("Codifica imagens binárias dadas em arquivos PBM ou por dados informados manualmente.\n");
+        printf("Argumentos:\n");
+        printf("  -?, --help  : apresenta essa orientação na tela.\n");
+        printf("  -m, --manual: ativa o modo de entrada manual.\n");
+        printf("  -f, --file ARQ: considera a imagem representada no arquivo PBM (Portable bitmap).\n");
+        return 1; // Código de retorno para indicar erro
+    }
+
+    int image[MAX_HEIGHT][MAX_WIDTH];
+    int width, height;
+
+    if ((strcmp(argv[1], "-f") == 0 || strcmp(argv[1], "--file") == 0) && argc >= 3) {
+        readPBMFile(argv[2], image, &width, &height);
+    } else {
+        printf("Digite a largura e altura da imagem: ");
+        scanf("%d %d", &width, &height);
+
+        printf("Digite os valores da imagem (0 para branco, 1 para preto):\n");
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                scanf("%d", &image[i][j]);
+            }
+        }
+    }
+
+    encodeImage(image, width, height);
+
+    return 0;
+}
+
+void encodeImage(int image[MAX_HEIGHT][MAX_WIDTH], int width, int height) {
+    printf("Código resultante: ");
+
+    int isUniform = 1;
+    int firstPixel = image[0][0];
+
+    for (int i = 0; i < height && isUniform; i++) {
+        for (int j = 0; j < width && isUniform; j++) {
+            if (image[i][j] != firstPixel) {
+                isUniform = 0;
+            }
+        }
+    }
+
+    if (isUniform) {
+        printf("%c", (firstPixel == 0) ? 'B' : 'P');
+    } else {
+        printf("X");
+
+        int newWidth = width / 2 + (width % 2);
+        int newHeight = height / 2 + (height % 2);
+
+        int subImage[MAX_HEIGHT][MAX_WIDTH];
+
+        for (int i = 0; i < newHeight; i++) {
+            for (int j = 0; j < newWidth; j++) {
+                subImage[i][j] = image[i][j];
+            }
+        }
+        encodeImage(subImage, newWidth, newHeight);
+
+        for (int i = 0; i < newHeight; i++) {
+            for (int j = 0; j < newWidth; j++) {
+                subImage[i][j] = image[i][j + newWidth];
+            }
+        }
+        encodeImage(subImage, newWidth, newHeight);
+
+        for (int i = 0; i < newHeight; i++) {
+            for (int j = 0; j < newWidth; j++) {
+                subImage[i][j] = image[i + newHeight][j];
+            }
+        }
+        encodeImage(subImage, newWidth, newHeight);
+
+        for (int i = 0; i < newHeight; i++) {
+            for (int j = 0; j < newWidth; j++) {
+                subImage[i][j] = image[i + newHeight][j + newWidth];
+            }
+        }
+        encodeImage(subImage, newWidth, newHeight);
+    }
+}
+
+void readPBMFile(char *filename, int image[MAX_HEIGHT][MAX_WIDTH], int *width, int *height) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Erro ao abrir o arquivo");
+        exit(EXIT_FAILURE);
+    }
+
+    char magic[3];
+    fscanf(file, "%2s", magic);
+
+    if (strcmp(magic, "P1") != 0) {
+        fprintf(stderr, "Formato de arquivo PBM inválido\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char c;
+    while ((c = fgetc(file)) == '#') {
+        while ((c = fgetc(file)) != '\n');
+    }
+
+    ungetc(c, file);
+
+    fscanf(file, "%d %d", width, height);
+
+    for (int i = 0; i < *height; i++) {
+        for (int j = 0; j < *width; j++) {
+            fscanf(file, "%d", &image[i][j]);
+        }
+    }
+
+    fclose(file);
+}
